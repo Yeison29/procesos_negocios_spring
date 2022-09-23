@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UsuarioController {
@@ -13,20 +15,27 @@ public class UsuarioController {
     private UsuarioRepository usuarioRepository;
 
     @GetMapping(value = "/usuario/{id}")
-    public Usuario getUsuario(@PathVariable Long id){
-        Usuario usuario = new Usuario();
-        usuario.setId(id);
-        usuario.setNombre("Yeison Danuil");
-        usuario.setApellidos("Ascanio Ascanio");
-        usuario.setFecha_nacimiento(new Date(2001,9,29));
-        usuario.setDocumento("1005074695");
-        usuario.setDireccion("KDX-105");
-        usuario.setTelefono("3122092826");
+    public Optional<Usuario> getUsuario(@PathVariable Long id){
+        Optional<Usuario> usuario = usuarioRepository.findById(id);
+
         return usuario;
     }
+
     @PostMapping("/usuario")
     public Usuario  crearUsario(@RequestBody Usuario usuario){
         usuarioRepository.save(usuario);
         return usuario;
+    }
+    @GetMapping("/usuarios")
+    public List<Usuario> listarUsuario(){
+        return usuarioRepository.findAll();
+    }
+    @GetMapping("/usuarios/{nombre}/{apellidos}")
+    public List<Usuario> listarPorNombreApellidos(@PathVariable String nombre,@PathVariable String apellidos){
+        return usuarioRepository.findAllByNombreAndApellidos(nombre, apellidos);
+    }
+    @GetMapping("/usuarios/{apellidos}")
+    public List<Usuario> listarPorApellidos(@PathVariable String apellidos){
+        return usuarioRepository.findAllByApellidos(apellidos);
     }
 }
