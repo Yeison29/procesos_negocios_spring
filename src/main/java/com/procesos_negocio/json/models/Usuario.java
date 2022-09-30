@@ -18,7 +18,7 @@ public class Usuario {
     private String  nombre;
     @Column(length = 300, nullable = false)
     private String apellidos;
-    @Column(length = 20, nullable = false)
+    @Column(length = 20, nullable = false, unique = true)
     private String documento;
     @Column(length = 100)
     private String direccion;
