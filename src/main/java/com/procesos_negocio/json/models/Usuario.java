@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 @Data
 @NoArgsConstructor
@@ -15,10 +16,12 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 100, nullable = false)
+    @NotBlank(message = "El campo del nombre no debe estar vacio")
     private String  nombre;
     @Column(length = 300, nullable = false)
     private String apellidos;
     @Column(length = 20, nullable = false, unique = true)
+    @NotBlank(message = "El documento ya se encuentra registrado en la base de datos")
     private String documento;
     @Column(length = 100)
     private String direccion;
