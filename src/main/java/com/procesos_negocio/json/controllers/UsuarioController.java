@@ -4,6 +4,7 @@ import com.procesos_negocio.json.models.Usuario;
 
 import com.procesos_negocio.json.service.UsuarioService;
 
+import com.procesos_negocio.json.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,14 @@ import java.util.Map;
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private JWTUtil jwtUtil;
 
     @GetMapping(value = "/usuario/{id}")
-    public ResponseEntity getUsuario(@PathVariable Long id){
+    public ResponseEntity getUsuario(@PathVariable Long id, @RequestHeader(value = "Authorization") String token){
+        if(jwtUtil.getKey(token) == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("TOKEN NO VALLIDO");
+        }
         return usuarioService.getUserById(id);
     }
 
@@ -31,29 +37,52 @@ public class UsuarioController {
         return usuarioService.createUser(usuario);
     }
     @GetMapping("/usuarios")
-    public ResponseEntity listarUsuario(){
+    public ResponseEntity listarUsuario(@RequestHeader(value = "Authorization") String token){
+        if(jwtUtil.getKey(token) == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("TOKEN NO VALLIDO");
+        }
         return usuarioService.allUsers();
     }
     @GetMapping("/usuarios/{nombre}/{apellidos}")
-    public ResponseEntity listarPorNombreApellidos(@PathVariable String nombre,@PathVariable String apellidos){
+    public ResponseEntity listarPorNombreApellidos(@PathVariable String nombre,@PathVariable String apellidos,
+                                                   @RequestHeader(value = "Authorization") String token){
+        if(jwtUtil.getKey(token) == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("TOKEN NO VALLIDO");
+        }
         return usuarioService.allUsersByNameAndLastname(nombre,apellidos);
     }
     @GetMapping("/usuarios/apellidos/{apellidos}")
-    public ResponseEntity listarPorApellidos(@PathVariable String apellidos){
+    public ResponseEntity listarPorApellidos(@PathVariable String apellidos,
+                                             @RequestHeader(value = "Authorization") String token){
+        if(jwtUtil.getKey(token) == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("TOKEN NO VALLIDO");
+        }
         return usuarioService.allUsersByLastname(apellidos);
     }
     @GetMapping("/usuarios/nombre/{nombre}")
-    public ResponseEntity listarPorNombre(@PathVariable String nombre) {
+    public ResponseEntity listarPorNombre(@PathVariable String nombre,
+                                          @RequestHeader(value = "Authorization") String token) {
+        if(jwtUtil.getKey(token) == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("TOKEN NO VALLIDO");
+        }
         return usuarioService.allUsersByName(nombre);
     }
     @PutMapping("/usuario/{id}")
-    public ResponseEntity editarUsuario(@PathVariable Long id, @Valid @RequestBody Usuario usuario){
-    return usuarioService.editUser(id, usuario);
+    public ResponseEntity editarUsuario(@PathVariable Long id, @Valid @RequestBody Usuario usuario,
+                                        @RequestHeader(value = "Authorization") String token){
+        if(jwtUtil.getKey(token) == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("TOKEN NO VALLIDO");
+        }
+        return usuarioService.editUser(id, usuario);
     }
 
     @DeleteMapping("/usuario/{id}")
-    public ResponseEntity eliminarUsuario(@PathVariable Long id){
-    return usuarioService.deleteUser(id);
+    public ResponseEntity eliminarUsuario(@PathVariable Long id,
+                                          @RequestHeader(value = "Authorization") String token){
+        if(jwtUtil.getKey(token) == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("TOKEN NO VALLIDO");
+        }
+        return usuarioService.deleteUser(id);
     }
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
